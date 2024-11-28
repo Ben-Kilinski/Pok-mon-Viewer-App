@@ -11,3 +11,4 @@ export const fetchPokemonDetails = async (idOrName) => {
   const response = await axios.get(`${API_URL}/pokemon/${idOrName}`);
   return response.data;
 };
+

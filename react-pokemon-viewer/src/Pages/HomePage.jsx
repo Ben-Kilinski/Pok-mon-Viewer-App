@@ -1,29 +1,31 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchPokemons } from "../redux/pokemonSlice";
-import PokemonCard from "../Components/Pokemoncard";
-import react=redux from react;
+import { useSelector, useDispatch } from "react-redux";
+import { fetchPokemon } from "../slices/pokemonSlice";
+import PokemonCard from "../components/PokemonCard";
 
-const HomePage = () => {
+function Home() {
   const dispatch = useDispatch();
-  const { list, status } = useSelector((state) => state.pokemon);
+  const { pokemonList, loading, error } = useSelector((state) => state.pokemon);
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchPokemons());
-    }
-  }, [dispatch, status]);
+    dispatch(fetchPokemon());
+  }, [dispatch]);
 
-  if (status === "loading") return <div>Loading...</div>;
-  if (status === "failed") return <div>Error loading Pokémon data.</div>;
+  if (loading) return <div className="text-center">Carregando...</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="pokemon-grid">
-      {list.map((pokemon) => (
-        <PokemonCard key={pokemon.name} pokemon={pokemon} />
-      ))}
+    <div className="container mx-auto">
+      <h1 className="text-4xl font-bold text-center my-6">Pokémon Viewer</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {pokemonList.map((pokemon, index) => (
+          <PokemonCard key={index} pokemon={pokemon} />
+        ))}
+      </div>
     </div>
   );
-};
+}
 
-export default HomePage;
+export default Home;
+
+

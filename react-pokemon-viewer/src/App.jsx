@@ -1,68 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import PokemonList from "./Components/PokemonList";
-import "./App.css"; // Adicione estilos, se necessário
+import PokemonCard from "./components/PokemonCard";
+import PokemonModal from "./Components/Modal";
+import "./index.css";
 
-const App = () => {
-  const [pokemons, setPokemons] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = parseInt(searchParams.get("page") || "0");
-  const pokemonsPerPage = 20;
-
-  const fetchPokemons = async () => {
-    try {
-      const offset = page * pokemonsPerPage;
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${pokemonsPerPage}`
-      );
-      const data = await response.json();
-      const pokemonDetails = await Promise.all(
-        data.results.map(async (pokemon) => {
-          const res = await fetch(pokemon.url);
-          const details = await res.json();
-          return {
-            name: details.name,
-            image: details.sprites.front_default,
-            types: details.types.map((type) => type.type.name),
-          };
-        })
-      );
-
-      // Adicionar Pokémon personalizados do local storage
-      const storedPokemons =
-        JSON.parse(localStorage.getItem("customPokemons")) || [];
-      setPokemons([...storedPokemons, ...pokemonDetails]);
-    } catch (error) {
-      console.error("Erro ao buscar Pokémons:", error);
-    }
-  };
+function App() {
+  const [pokemonList, setPokemonList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
 
   useEffect(() => {
-    fetchPokemons();
-  }, [page]);
+    async function fetchPokemon() {
+      try {
+        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
+        const data = await response.json();
+        setPokemonList(data.results);
+        setLoading(false);
+      } catch (err) {
+        setError("Erro ao carregar Pokémon");
+        setLoading(false);
+      }
+    }
+    fetchPokemon();
+  }, []);
+
+  if (loading) return <div className="text-center">Carregando...</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div>
-      <PokemonList pokemons={pokemons} />
-      <div className="pagination">
-        <button
-          onClick={() => {
-            setSearchParams({ page: Math.max(page - 1, 0) });
-          }}
-          disabled={page === 0}
-        >
-          Página Anterior
-        </button>
-        <button
-          onClick={() => {
-            setSearchParams({ page: page + 1 });
-          }}
-        >
-          Próxima Página
-        </button>
+    <div className="container mx-auto">
+      <h1 className="text-4xl font-bold text-center my-6">Pokémon Viewer</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {pokemonList.map((pokemon, index) => (
+          <PokemonCard
+            key={index}
+            pokemon={pokemon}
+            onClick={() => setSelectedPokemon(pokemon)}
+          />
+        ))}
       </div>
+      {selectedPokemon && (
+        <PokemonModal
+          pokemon={selectedPokemon}
+          onClose={() => setSelectedPokemon(null)}
+        />
+      )}
     </div>
   );
-};
+}
 
 export default App;

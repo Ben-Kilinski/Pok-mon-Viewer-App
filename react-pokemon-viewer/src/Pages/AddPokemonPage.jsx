@@ -1,55 +1,51 @@
-const AddPokemonPage = () => {
-    const [name, setName] = useState("");
-    const [type, setType] = useState("");
-    const [image, setImage] = useState("");
-  
-    const handleAddPokemon = () => {
-      const newPokemon = {
-        name,
-        types: [type],
-        image,
-      };
-      const storedPokemons =
-        JSON.parse(localStorage.getItem("customPokemons")) || [];
-      storedPokemons.push(newPokemon);
-      localStorage.setItem("customPokemons", JSON.stringify(storedPokemons));
-      alert(`${name} foi adicionado!`);
-    };
-  
-    return (
-      <div>
-        <h2>Adicionar Pokémon</h2>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label>
-            Nome:
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nome do Pokémon"
-            />
-          </label>
-          <br />
-          <label>
-            Tipo:
-            <input
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              placeholder="Tipo do Pokémon"
-            />
-          </label>
-          <br />
-          <label>
-            URL da Imagem:
-            <input
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              placeholder="URL da imagem"
-            />
-          </label>
-          <br />
-          <button onClick={handleAddPokemon}>Salvar Pokémon</button>
-        </form>
-      </div>
-    );
+import React, { useState } from "react";
+
+function AddPokemon() {
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+    abilities: "",
+    baseExperience: "",
+    height: "",
+    weight: "",
+    image: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const customPokemon = JSON.parse(localStorage.getItem("customPokemon")) || [];
+    localStorage.setItem("customPokemon", JSON.stringify([...customPokemon, formData]));
+    alert("Pokémon adicionado!");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-4">
+      <h1 className="text-2xl font-bold">Adicionar Pokémon</h1>
+      {Object.keys(formData).map((key) => (
+        <div key={key} className="my-2">
+          <label className="block font-semibold capitalize">{key}</label>
+          <input
+            type="text"
+            name={key}
+            value={formData[key]}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+      ))}
+      <button
+        type="submit"
+        className="bg-blue-500 text-white p-2 rounded mt-4"
+      >
+        Adicionar
+      </button>
+    </form>
+  );
+}
+
+export default AddPokemon;
