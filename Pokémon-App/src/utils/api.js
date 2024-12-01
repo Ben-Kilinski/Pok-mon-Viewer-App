@@ -7,7 +7,7 @@ export async function fetchPokemonList(limit = 20, offset = 0) {
     );
     if (!response.ok) throw new Error("Failed to fetch Pokémon list.");
     const data = await response.json();
-    return data.results; // Array com { name, url }
+    return data.results;
   } catch (error) {
     console.error(error);
     return [];

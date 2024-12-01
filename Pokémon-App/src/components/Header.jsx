@@ -12,7 +12,6 @@ const headerStyles = {
   padding: "20px",
   backgroundColor: "#ffcb05",
   color: "#2a75bb",
-  fontFamily: "Arial, sans-serif",
 };
 
 const subTitleStyles = {

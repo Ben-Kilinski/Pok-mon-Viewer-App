@@ -3,40 +3,51 @@ import Header from "./components/Header";
 import Grid from "./components/Grid";
 import PokemonCard from "./components/PokemonCard";
 import LoadingSpinner from "./components/LoadingSpinner";
+import PokemonModal from "./components/Modal";
 import { fetchPokemonList, fetchPokemonDetails } from "./utils/api";
 
 function App() {
-  const [pokemonList, setPokemonList] = useState([]); // Lista de Pokémon
-  const [loading, setLoading] = useState(true); // Estado de carregamento inicial
-  const [loadingMore, setLoadingMore] = useState(false); // Estado para "Load More"
-  const [offset, setOffset] = useState(0); // Controle do offset
-  const LIMIT = 20; // Quantidade de Pokémon por requisição
+  const [pokemonList, setPokemonList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const LIMIT = 20;
 
-  // Função para buscar Pokémon
   async function loadPokemon(nextOffset) {
-    if (!loadingMore) setLoading(true); // Mostrar carregamento inicial
-    const list = await fetchPokemonList(LIMIT, nextOffset); // Buscar lista de Pokémon
+    if (!loadingMore) setLoading(true);
+    const list = await fetchPokemonList(LIMIT, nextOffset);
     const details = await Promise.all(
       list.map((pokemon) => fetchPokemonDetails(pokemon.url))
-    ); // Buscar detalhes de cada Pokémon
-    setPokemonList((prevList) => [...prevList, ...details]); // Adicionar à lista existente
-    setLoading(false); // Desativar carregamento inicial
-    setLoadingMore(false); // Desativar carregamento do botão
+    );
+    setPokemonList((prevList) => [...prevList, ...details]);
+    setLoading(false);
+    setLoadingMore(false);
   }
 
   useEffect(() => {
-    loadPokemon(offset); // Buscar Pokémon na montagem do componente
+    loadPokemon(offset);
   }, [offset]);
 
-  // Função para carregar mais Pokémon
   const handleLoadMore = () => {
-    setLoadingMore(true); // Ativar carregamento do botão
-    setOffset((prevOffset) => prevOffset + LIMIT); // Atualizar o offset
+    setLoadingMore(true);
+    setOffset((prevOffset) => prevOffset + LIMIT);
+  };
+
+  const handleCardClick = (pokemon) => {
+    setSelectedPokemon(pokemon);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedPokemon(null);
   };
 
   if (loading && pokemonList.length === 0) {
     return (
-      <div style={appStyles}>
+      <div>
         <Header />
         <LoadingSpinner />
       </div>
@@ -44,11 +55,15 @@ function App() {
   }
 
   return (
-    <div style={appStyles}>
+    <div>
       <Header />
       <Grid>
         {pokemonList.map((pokemon) => (
-          <PokemonCard key={pokemon.id} pokemon={pokemon} />
+          <PokemonCard
+            key={pokemon.id}
+            pokemon={pokemon}
+            onClick={handleCardClick}
+          />
         ))}
       </Grid>
       <div style={buttonContainerStyles}>
@@ -60,15 +75,14 @@ function App() {
           {loadingMore ? "Loading..." : "Load More"}
         </button>
       </div>
+      <PokemonModal
+        open={isModalOpen}
+        handleClose={handleModalClose}
+        pokemon={selectedPokemon}
+      />
     </div>
   );
 }
-
-const appStyles = {
-  backgroundColor: "#f6f8fc",
-  minHeight: "100vh",
-  padding: "20px",
-};
 
 const buttonContainerStyles = {
   textAlign: "center",
@@ -83,8 +97,6 @@ const buttonStyles = {
   padding: "10px 20px",
   cursor: "pointer",
   fontSize: "16px",
-  width: "100%",
-  maxWidth: "200px",
 };
 
 export default App;
