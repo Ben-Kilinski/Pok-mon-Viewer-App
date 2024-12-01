@@ -1,30 +1,38 @@
-function PokemonCard() {
-    return (
-      <div style={cardStyles}>
-        <h3>Pikachu</h3>
-        <img
-          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
-          alt="Pikachu"
-          style={imageStyles}
-        />
-        <p>Type: Electric</p>
+import { useState } from "react";
+import "../index.css";
+
+function PokemonCard({ pokemon }) {
+  const [selected, setSelected] = useState(false);
+
+  return (
+    <div
+      className={`pokemon-card ${selected ? "selected" : ""}`}
+      onClick={() => setSelected(!selected)}
+    >
+      <h3>{pokemon.name.toUpperCase()}</h3>
+      <img
+        src={pokemon.sprites.front_default}
+        alt={pokemon.name}
+      />
+      <p><strong>Type:</strong> {pokemon.types.map((t) => t.type.name).join(", ")}</p>
+      <p><strong>Weight:</strong> {pokemon.weight}</p>
+      <p><strong>Height:</strong> {pokemon.height}</p>
+      <div className="pokemon-card-stats">
+        <h4>Stats:</h4>
+        {pokemon.stats.map((stat) => (
+          <p key={stat.stat.name}>
+            {stat.stat.name}: {stat.base_stat}
+          </p>
+        ))}
       </div>
-    );
-  }
-  
-  const cardStyles = {
-    border: "1px solid #ccc",
-    borderRadius: "10px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
-    padding: "10px",
-    backgroundColor: "#fff",
-  };
-  
-  const imageStyles = {
-    width: "100px",
-    height: "100px",
-  };
-  
-  export default PokemonCard;
-  
+      <div className="pokemon-card-abilities">
+        <h4>Abilities:</h4>
+        {pokemon.abilities.map((ability) => (
+          <p key={ability.ability.name}>{ability.ability.name}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default PokemonCard;

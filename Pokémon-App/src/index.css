@@ -1,0 +1,47 @@
+/* -------------------------Pokemon Card ---------------------------------------------------------*/
+.pokemon-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  padding: 15px;
+  background: linear-gradient(to bottom, #fff, #f0f0f0);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.pokemon-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pokemon-card.selected {
+  border: 2px solid #2a75bb;
+  box-shadow: 0 0 10px #2a75bb;
+}
+
+.pokemon-card img {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+
+.pokemon-card-stats,
+.pokemon-card-abilities {
+  text-align: left;
+  margin-top: 10px;
+}
+
+
+  /* -------------------------Spinner ---------------------------------------------------------*/
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+
+  
